@@ -10,7 +10,7 @@ RUN chmod +x /var/opt/sqlpackage/sqlpackage
 ENV ACCEPT_EULA=Y
 ENV SA_PASSWORD=@Pa55word
 
-COPY ./db-testproject.dacpac /tmp/database.dacpac
+COPY ./drop/db-testproject.dacpac /tmp/database.dacpac
 
 RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager has started" \
     && /var/opt/sqlpackage/sqlpackage /SourceFile:/tmp/database.dacpac \
