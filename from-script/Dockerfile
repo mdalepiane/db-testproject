@@ -1,17 +1,16 @@
 FROM mcr.microsoft.com/mssql/server AS builder
 
 USER root
-
-ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD=@Pa55word
-
-COPY ./db-testproject.dacpac /tmp/database.dacpac
-
 RUN apt-get update
 RUN apt-get install unzip dotnet-sdk-2.2 -y --no-install-recommends
 RUN wget -q -O /var/opt/sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=2069122
 RUN unzip -qq /var/opt/sqlpackage.zip -d /var/opt/sqlpackage
 RUN chmod +x /var/opt/sqlpackage/sqlpackage
+
+ENV ACCEPT_EULA=Y
+ENV SA_PASSWORD=@Pa55word
+
+COPY ./db-testproject.dacpac /tmp/database.dacpac
 
 RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager has started" \
     && /var/opt/sqlpackage/sqlpackage /SourceFile:/tmp/database.dacpac \
