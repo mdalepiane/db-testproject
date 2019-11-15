@@ -1,0 +1,46 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+jobs:
+- job: buildDacpac
+  displayName: "Build dacpac"
+  timeoutInMinutes: 10
+  pool:
+    vmImage: 'windows-latest'
+    demands:
+      - msbuild
+      - visualstudio
+  steps:
+  - task: VSBuild@1
+    displayName: 'Build solution db-testproject/db-testproject.sln'
+    inputs:
+      solution: 'db-testproject/db-testproject.sln'
+      msbuildArgs: '/p:OutDir=$(Build.ArtifactStagingDirectory)'
+      configuration: Release
+      clean: true
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+- job: buildDocker
+  displayName: "Build Docker"
+  dependsOn: buildDacpac
+  timeoutInMinutes: 10
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Build Artifacts'
+    inputs:
+      downloadType: specific
+      itemPattern: 'drop/**.dacpac'
+  - task: Docker@2
+    displayName: buildAndPush
+    inputs:
+      containerRegistry: devcg
+      repository: 'db-testproject'
+      buildContext: '$(System.ArtifactsDirectory)'
