@@ -5,7 +5,7 @@
 
 trigger:
 - master
-
+displayName: db-testproject-CI
 jobs:
 - job: buildDacpac
   displayName: "Build dacpac"
@@ -38,12 +38,20 @@ jobs:
   - task: Docker@2
     displayName: docker build
     inputs:
+      containerRegistry: devcg
+      repository: 'db-testproject'
       command: build
       buildContext: '$(System.ArtifactsDirectory)'
       arguments: '--build-arg DACPAC_FILE=drop/db-testproject.dacpac'
+      tags: |
+        $(Build.BuildId)
+        $(Build.SourceBranchName)
   - task: Docker@2
     displayName: docker push
     inputs:
       containerRegistry: devcg
       repository: 'db-testproject'
       command: push
+      tags: |
+        $(Build.BuildId)
+        $(Build.SourceBranchName)
