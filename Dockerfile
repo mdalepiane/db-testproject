@@ -7,7 +7,7 @@ RUN wget -q -O /var/opt/sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=2
 RUN unzip -qq /var/opt/sqlpackage.zip -d /var/opt/sqlpackage
 RUN chmod +x /var/opt/sqlpackage/sqlpackage
 
-ARG DACPAC_FILE="./drop/db-testproject.dacpac"
+ARG DACPAC_FILE="db-testproject/db-testproject/db-artifacts/db-testproject.dacpac"
 ARG TARGET_DB_NAME="db-testproject"
 
 ENV ACCEPT_EULA=Y
