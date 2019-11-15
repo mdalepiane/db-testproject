@@ -5,7 +5,6 @@
 
 trigger:
 - master
-displayName: db-testproject-CI
 jobs:
 - job: buildDacpac
   displayName: "Build dacpac"
