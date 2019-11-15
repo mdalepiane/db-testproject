@@ -3,10 +3,11 @@ FROM mcr.microsoft.com/mssql/server AS builder
 # Improve build time
 # See http://donovanbrown.com/post/Stop-wasting-time-during-NET-Core-builds
 ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 USER root
 RUN apt-get update
-RUN apt-get install unzip dotnet-sdk-2.2 -y --no-install-recommends
+RUN apt-get install unzip dotnet-sdk-3.0 -y --no-install-recommends
 RUN wget -q -O /var/opt/sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=2108814
 RUN unzip -qq /var/opt/sqlpackage.zip -d /var/opt/sqlpackage
 RUN chmod +x /var/opt/sqlpackage/sqlpackage
