@@ -2,17 +2,24 @@ FROM mcr.microsoft.com/mssql/server AS builder
 
 USER root
 
-ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD=@Pa55word
-
-COPY ./db-testproject.dacpac /tmp/database.dacpac
-
+# Install sqlpackage
 RUN apt-get update
 RUN apt-get install unzip dotnet-sdk-2.2 -y --no-install-recommends
 RUN wget -q -O /var/opt/sqlpackage.zip https://go.microsoft.com/fwlink/?linkid=2069122
 RUN unzip -qq /var/opt/sqlpackage.zip -d /var/opt/sqlpackage
 RUN chmod +x /var/opt/sqlpackage/sqlpackage
 
+ARG dacpac_file="./db-testproject.dacpac"
+ARG database_name="db-testproject"
+ARG sql_user="sa"
+#ARG sql_password="@Pa55word"
+
+ENV ACCEPT_EULA=Y
+ENV SA_PASSWORD="@Pa55word"
+
+COPY $dacpac_file /tmp/database.dacpac
+
+# Start sqlserver and generate .sql from .dacpac
 RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager has started" \
     && /var/opt/sqlpackage/sqlpackage /SourceFile:/tmp/database.dacpac \
     /a:Script /TargetServerName:localhost /TargetDatabaseName:"db-testproject" \
@@ -23,13 +30,18 @@ RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager 
 
 FROM mcr.microsoft.com/mssql/server AS final
 
+ARG database_name="db-testproject"
+ARG sql_user="sa"
+ARG sql_password="@Pa55word"
+
 ENV ACCEPT_EULA=Y
-ENV SA_PASSWORD=@Pa55word
+ENV SA_PASSWORD=$sql_password
 
 COPY --from=builder /tmp/database.sql .
 
+# Start sqlserver and apply .sql into database
 RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager has started" \
-    && /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P @Pa55word -i database.sql
+    && /opt/mssql-tools/bin/sqlcmd -S localhost -U $sql_user -P $sql_password -i database.sql
 
 #RUN /var/opt/sqlpacage/sqlpackage /a:Publish /tdn:<db_name> \
 #         /pr:/var/opt/<project_dir>/docker.publish.xml /sf:/var/opt/<project_dir>/bin/Debug/<project-name>.dacpac \
