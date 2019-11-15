@@ -1,5 +1,9 @@
 FROM mcr.microsoft.com/mssql/server AS builder
 
+# Improve build time
+# See http://donovanbrown.com/post/Stop-wasting-time-during-NET-Core-builds
+ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+
 USER root
 RUN apt-get update
 RUN apt-get install unzip dotnet-sdk-2.2 -y --no-install-recommends
