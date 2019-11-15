@@ -12,9 +12,6 @@ jobs:
   timeoutInMinutes: 10
   pool:
     vmImage: 'windows-latest'
-    demands:
-      - msbuild
-      - visualstudio
   steps:
   - task: VSBuild@1
     displayName: 'Build solution db-testproject/db-testproject.sln'
