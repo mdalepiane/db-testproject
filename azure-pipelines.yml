@@ -24,7 +24,7 @@ jobs:
     displayName: 'Publish Artifact: drop'
 
 - job: buildDocker
-  displayName: "Build Docker"
+  displayName: "Build Docker image"
   dependsOn: buildDacpac
   timeoutInMinutes: 10
   pool:
@@ -34,10 +34,16 @@ jobs:
     displayName: 'Download Build Artifacts'
     inputs:
       downloadType: specific
-      itemPattern: 'drop/**.dacpac'
+      itemPattern: 'drop/db-testproject.dacpac'
   - task: Docker@2
-    displayName: buildAndPush
+    displayName: docker build
+    inputs:
+      command: build
+      buildContext: '$(System.ArtifactsDirectory)'
+      arguments: '--build-arg DACPAC_FILE=drop/db-testproject.dacpac'
+  - task: Docker@2
+    displayName: docker push
     inputs:
       containerRegistry: devcg
       repository: 'db-testproject'
-      buildContext: '$(System.ArtifactsDirectory)'
+      command: push
