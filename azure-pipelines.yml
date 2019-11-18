@@ -5,6 +5,7 @@
 
 trigger:
 - master
+name: $(Date:yyyyMMdd)$(Rev:.r)
 jobs:
 - job: buildDacpac
   displayName: "Build dacpac"
@@ -13,7 +14,7 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - task: VSBuild@1
-    displayName: 'Build solution db-testproject/db-testproject.sln'
+    displayName: 'Build solution'
     inputs:
       solution: 'db-testproject/db-testproject.sln'
       msbuildArgs: '/p:OutDir=$(Build.ArtifactStagingDirectory)'
@@ -43,7 +44,7 @@ jobs:
       buildContext: '$(System.ArtifactsDirectory)'
       arguments: '--build-arg DACPAC_FILE=drop/db-testproject.dacpac'
       tags: |
-        $(Build.BuildId)
+        $(Build.BuildNumber)
         $(Build.SourceBranchName)
   - task: Docker@2
     displayName: docker push
@@ -52,5 +53,5 @@ jobs:
       repository: 'db-testproject'
       command: push
       tags: |
-        $(Build.BuildId)
+        $(Build.BuildNumber)
         $(Build.SourceBranchName)
