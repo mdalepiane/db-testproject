@@ -8,7 +8,6 @@ This project is currently able to:
 
 Points to improve:
 - MSBuild path is hard-coded in `build.ps1`
-- Add an `azure-pipelines.yml`
 
 ## Usage
 ### Build locally
