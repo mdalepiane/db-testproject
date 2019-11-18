@@ -2,4 +2,4 @@ $msbuild='C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBui
 & $msbuild .\db-testproject\db-testproject.sln /p:OutDir='db-artifacts'
 
 $dacpac_file="db-testproject/db-testproject/db-artifacts/db-testproject.dacpac"
-docker build -t db-testproject --build-arg DACPAC_FILE=$dacpac_file .
+docker build -t db-testproject --build-arg DACPAC_FILE=$dacpac_file . --build-arg TARGET_DB_NAME="db-testproject"

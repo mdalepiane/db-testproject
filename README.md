@@ -21,6 +21,7 @@ There might be some setback since the MSBuild path is hard-coded in the script.
 
 | Build argument | Description | Default value |
 |----------------|-------------|---------------|
-| DACPAC_FILE    | Relative path to the .dacpac file | `db-testproject/db-testproject/db-artifacts/db-testproject.dacpac` |
-| TARGET_DB_NAME | Database name | `db-testproject` |
+| DACPAC_FILE    | Relative path to the .dacpac file | *Mandatory** |
+| TARGET_DB_NAME | Database name | *Mandatory** |
 | SA_PASSWORD    | sa password for database image | `@Pa55word` |
+\* *Mandatory* fields must always be provided through `--build-arg`
