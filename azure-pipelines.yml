@@ -23,8 +23,8 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: drop'
 
-- job: buildDocker
-  displayName: "Build Docker image"
+- job: buildDockerLinux
+  displayName: "Build Docker image linux"
   dependsOn: buildDacpac
   timeoutInMinutes: 10
   pool:
@@ -39,8 +39,9 @@ jobs:
     displayName: docker build
     inputs:
       containerRegistry: devcg
-      repository: 'db-testproject'
+      repository: 'db-testproject-linux'
       command: build
+      Dockerfile: '**/linux/Dockerfile'
       buildContext: '$(System.ArtifactsDirectory)'
       arguments: '--build-arg DACPAC_FILE=drop/db-testproject.dacpac --build-arg TARGET_DB_NAME="db-testproject"'
       tags: |
@@ -50,7 +51,40 @@ jobs:
     displayName: docker push
     inputs:
       containerRegistry: devcg
-      repository: 'db-testproject'
+      repository: 'db-testproject-linux'
+      command: push
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)
+- job: buildDockerWindows
+  displayName: "Build Docker image windows"
+  dependsOn: buildDacpac
+  timeoutInMinutes: 10
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Build Artifacts'
+    inputs:
+      downloadType: specific
+      itemPattern: 'drop/db-testproject.dacpac'
+  - task: Docker@2
+    displayName: docker build
+    inputs:
+      containerRegistry: devcg
+      repository: 'db-testproject-windows'
+      command: build
+      Dockerfile: '**/windows/Dockerfile'
+      buildContext: '$(System.ArtifactsDirectory)'
+      arguments: '--build-arg DACPAC_FILE=drop/db-testproject.dacpac --build-arg TARGET_DB_NAME="db-testproject"'
+      tags: |
+        $(Build.BuildNumber)
+        $(Build.SourceBranchName)
+  - task: Docker@2
+    displayName: docker push
+    inputs:
+      containerRegistry: devcg
+      repository: 'db-testproject-windows'
       command: push
       tags: |
         $(Build.BuildNumber)
