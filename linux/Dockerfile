@@ -38,4 +38,5 @@ ENV SA_PASSWORD=$SA_PASSWORD
 COPY --from=builder /tmp/database.sql .
 
 RUN (/opt/mssql/bin/sqlservr --accept-eula &) | grep -q "Service Broker manager has started" \
-    && /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i database.sql
+    && /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -i database.sql \
+    && /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -q SHUTDOWN -o /dev/null || true
